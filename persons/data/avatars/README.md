@@ -1,0 +1,2 @@
+## Persons raw data
+The raw data is used in order to generate the Persons data set. It is however quiet large (>100Mb) so we provide it through a public link outside of GitHub. Get it [here](https://www.dropbox.com/s/whea9na512vdjvh/avatars_6_raw.pkl?dl=0) and place it in the current folder.
