@@ -55,6 +55,9 @@ Run the training code for the sufficient set (using `-e` for the extended set an
 
 A folder with all the learned models and a log file will be created under the `data/results` folder.
 
+## Extracting scene structures
+Code will be added soon.
+
 ## Paper
 If you find our work useful in your research or publication, please cite our work:
 
