@@ -9,7 +9,7 @@ if interactive_session:
 
 from v26.funcs import *
 
-gpus_per_node = torch.cuda.device_count()
+ngpus_per_node = torch.cuda.device_count()
 import argparse
 
 parser = argparse.ArgumentParser()
