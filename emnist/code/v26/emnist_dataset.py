@@ -157,6 +157,20 @@ class EMNISTAdjDatasetLabelAdjAll(EMNISTAdjDataset):
         loss_weight = loss_weight.float()
         return img,seg,label_existence,label_all,label_task,id, flag,loss_weight
         
+class EMNISTAdjDatasetLabelAdjAllNew(EMNISTAdjDatasetNew):
+    
+    def __getitem__(self, index):
+        img,seg,label_existence,label_all,label_task,id, flag = super().__getitem__(index)
+
+        not_available_class=48
+        # right-of of all characters
+        label_adj_all = calc_label_adj_all(label_all.numpy(),not_available_class,adj_type = 0)
+        label_adj_all = torch.tensor(label_adj_all)
+        loss_weight = label_adj_all!=not_available_class
+        label_task = label_adj_all
+        loss_weight = loss_weight.float()
+        return img,seg,label_existence,label_all,label_task,id, flag,loss_weight
+
 def inputs_to_struct_label_adj_all(inputs):
     *basic_inputs,loss_weight = inputs
     sample = inputs_to_struct_basic(basic_inputs)

@@ -130,22 +130,43 @@ if num_gpus > 1:
 
 from torch.utils.data import DataLoader
 if dummyds:
-    from v26.emnist_dataset import EMNISTAdjDatasetBase, inputs_to_struct_basic as inputs_to_struct
+    if flag_at is FlagAt.NOFLAG:
+        from v26.emnist_dataset import EMNISTAdjDatasetBase, calc_label_adj_all, inputs_to_struct_label_adj_all as inputs_to_struct
+    
+        class EMNISTAdjDatasetDummyAdjAll(EMNISTAdjDatasetBase):
+            def __getitem__(self, index):
+                img = torch.zeros(inshape, dtype=torch.float)
+                seg = torch.zeros_like(img)
+                label_existence = torch.zeros([nclasses_existence],
+                                              dtype=torch.float)
+                label_all = np.array([[0,1,2,3,4,5]])
+                label_all = torch.tensor(label_all, dtype=torch.int)
+                flag = torch.zeros(flag_size, dtype=torch.float)
+                id = torch.tensor(index)
+                label_adj_all = calc_label_adj_all(label_all.numpy(),not_available_class,adj_type = 0)
+                label_adj_all = torch.tensor(label_adj_all)
+                loss_weight = label_adj_all!=not_available_class
+                label_task = label_adj_all
+                loss_weight = loss_weight.float()
+                return img,seg,label_existence,label_all,label_task,id, flag,loss_weight
+        dataset = EMNISTAdjDatasetDummyAdjAll
+    else:
+        from v26.emnist_dataset import EMNISTAdjDatasetBase, inputs_to_struct_basic as inputs_to_struct
+        class EMNISTAdjDatasetDummy(EMNISTAdjDatasetBase):
+            def __getitem__(self, index):
+                img = torch.zeros(inshape, dtype=torch.float)
+                seg = torch.zeros_like(img)
+                label_existence = torch.zeros([nclasses_existence],
+                                              dtype=torch.float)
+                label_all = torch.ones((1), dtype=torch.int)
+                flag = torch.zeros(flag_size, dtype=torch.float)
+                label_task = torch.zeros((1), dtype=torch.long)
+                id = torch.tensor(index)
+                label_task = label_task.view((-1))
+                return img, seg, label_existence, label_all, label_task, id, flag
 
-    class EMNISTAdjDatasetDummy(EMNISTAdjDatasetBase):
-        def __getitem__(self, index):
-            img = torch.zeros(inshape, dtype=torch.float)
-            seg = torch.zeros_like(img)
-            label_existence = torch.zeros([nclasses_existence],
-                                          dtype=torch.float)
-            label_all = torch.ones((1), dtype=torch.int)
-            flag = torch.zeros(flag_size, dtype=torch.float)
-            label_task = torch.zeros((1), dtype=torch.long)
-            id = torch.tensor(index)
-            label_task = label_task.view((-1))
-            return img, seg, label_existence, label_all, label_task, id, flag
 
-    dataset = EMNISTAdjDatasetDummy
+        dataset = EMNISTAdjDatasetDummy
 
     def flag_to_comp(flag):
         return 1, 1
@@ -153,9 +174,10 @@ if dummyds:
     train_ds = dataset(inshape, flag_size, nclasses_existence, nsamples_train)
     test_ds = dataset(inshape, flag_size, nclasses_existence, nsamples_test)
     val_ds = dataset(inshape, flag_size, nclasses_existence, nsamples_val)
+    normalize_image = False
 else:
     if flag_at is FlagAt.NOFLAG:
-        from v26.emnist_dataset import EMNISTAdjDatasetLabelAdjAll as dataset, inputs_to_struct_label_adj_all as inputs_to_struct
+        from v26.emnist_dataset import EMNISTAdjDatasetLabelAdjAllNew as dataset, inputs_to_struct_label_adj_all as inputs_to_struct
     else:
         from v26.emnist_dataset import EMNISTAdjDatasetNew as dataset, inputs_to_struct_basic as inputs_to_struct
 
@@ -433,8 +455,8 @@ def multi_label_loss(outs, samples, nclasses):
     return loss_task
 
 
-def multi_label_loss_weighted_loss(outs, samples):
-    losses_task = multi_label_loss_base(outs, samples)
+def multi_label_loss_weighted_loss(outs, samples, nclasses):
+    losses_task = multi_label_loss_base(outs, samples, nclasses)
     loss_weight = samples.loss_weight
     losses_task = losses_task * loss_weight
     loss_task = losses_task.sum() / loss_weight.sum(
@@ -568,7 +590,7 @@ for k in range(len(samples.image)):
     present_st = [cl2let[c] for c in present]
     flag = samples.flag[k]
     if model_opts.flag_at is FlagAt.NOFLAG:
-        ins_st = 'Right of all'
+        tit = 'Right of all'
     else:
         adj_type, char = flag_to_comp(flag)
         adj_type_st = 'Right' if adj_type == 0 else 'Left'
