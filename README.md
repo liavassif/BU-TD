@@ -1,9 +1,14 @@
 # BU-TD
-## Official code for the paper [Image interpretation by iterative bottom-up top-down processing](https://arxiv.org/abs/2105.05592)
-Scene understanding requires the extraction and representation of scene components, such as objects and their parts, people, and places, together with their individual properties, as well as relations and interactions between them. We describe a model in which meaningful scene structures are extracted from the image by an iterative process, combining bottom-up (BU) and top-down (TD) networks, interacting through a symmetric bi-directional communication between them (‘counter-streams’ structure). The BU-TD model extracts and recognizes scene constituents with their selected properties and relations, and uses them to describe and understand the image.
+## Official code for the paper [Human-like scene interpretation by a guided counterstream processing](https://www.pnas.org/doi/10.1073/pnas.2211179120)
+Shimon Ullman, Liav Assif*, Alona Strugatski*, Ben-Zion Vatashsky, Hila Levi, Aviv Netanyahu, Adam Yaari
+
+(* Equal Contribution)
+
+Understanding a visual scene is an unsolved and daunting task, since scenes can contain a large number of objects, their properties, and interrelations. Extracting the full scene structure is therefore infeasible, but often unnecessary, since it will be sufficient to extract a partial scene structure, which depends on the observer’s goal and interest. The presented model has a human-like ability to perform such a partial interpretation, focusing on scene structures of interest, evolving sequentially, in a goal-directed manner. The model uses a cortex-like combination of bottom–up (BU) and top–down (TD) networks, where the goal is achieved by automatically providing a sequence of top–down instructions that guide the process in an efficient manner, which generalizes broadly across different scene structures.
+
 ![Counter stream](/figures/Counter-stream.png)
 
-Currently the repository contains the code for the Persons and EMNIST experiments (described in Sections 3 and 5 of the paper).
+Currently the repository contains the code for the Persons and EMNIST experiments (described in the Section "Combinatorial Generalization" of the paper).
 The code creates the data sets used in the paper and also the bottom up (BU) - top down (TD) network model (counter stream).
 
 
@@ -61,6 +66,6 @@ Code will be added soon.
 ## Paper
 If you find our work useful in your research or publication, please cite our work:
 
-[Image interpretation by iterative bottom-up top-down processing](https://arxiv.org/abs/2105.05592)
+[Human-like scene interpretation by a guided counterstream processing](https://www.pnas.org/doi/10.1073/pnas.2211179120)
 
-Shimon Ullman, Liav Assif, Alona Strugatski, Ben-Zion Vatashsky, Hila Levi, Aviv Netanyahu, Adam Yaari
+An earlier version of the paper appeared in: [Image interpretation by iterative bottom-up top-down processing](https://arxiv.org/abs/2105.05592)
